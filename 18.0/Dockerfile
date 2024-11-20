@@ -1,5 +1,5 @@
 FROM ubuntu:noble
-MAINTAINER Odoo S.A. <info@odoo.com>
+LABEL maintainer="eYssen IT Services <info@eyssen.hu>"
 
 SHELL ["/bin/bash", "-xo", "pipefail", "-c"]
 
@@ -10,10 +10,10 @@ ENV LANG en_US.UTF-8
 ARG TARGETARCH
 
 # Install some deps, lessc and less-plugin-clean-css, and wkhtmltopdf
-
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive \
     apt-get install -y --no-install-recommends \
+        git \
         ca-certificates \
         curl \
         dirmngr \
@@ -21,6 +21,7 @@ RUN apt-get update && \
         gnupg \
         libssl-dev \
         node-less \
+        nodejs \
         npm \
         python3-magic \
         python3-num2words \
@@ -37,6 +38,22 @@ RUN apt-get update && \
         python3-watchdog \
         python3-xlrd \
         python3-xlwt \
+        python3-venv \
+        python3-dev \
+        build-essential \
+        libxml2-dev \
+        libxslt1-dev \
+        zlib1g-dev \
+        libsasl2-dev \
+        libldap2-dev \
+        libpq-dev \
+        libjpeg-dev \
+        libffi-dev \
+        libssl-dev \
+        libyaml-dev \
+        wget \
+        unzip \
+        postgresql-client \
         xz-utils && \
     if [ -z "${TARGETARCH}" ]; then \
         TARGETARCH="$(dpkg --print-architecture)"; \
@@ -52,53 +69,48 @@ RUN apt-get update && \
     && apt-get install -y --no-install-recommends ./wkhtmltox.deb \
     && rm -rf /var/lib/apt/lists/* wkhtmltox.deb
 
-# install latest postgresql-client
-RUN echo 'deb http://apt.postgresql.org/pub/repos/apt/ noble-pgdg main' > /etc/apt/sources.list.d/pgdg.list \
-    && GNUPGHOME="$(mktemp -d)" \
-    && export GNUPGHOME \
-    && repokey='B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8' \
-    && gpg --batch --keyserver keyserver.ubuntu.com --recv-keys "${repokey}" \
-    && gpg --batch --armor --export "${repokey}" > /etc/apt/trusted.gpg.d/pgdg.gpg.asc \
-    && gpgconf --kill all \
-    && rm -rf "$GNUPGHOME" \
-    && apt-get update  \
-    && apt-get install --no-install-recommends -y postgresql-client \
-    && rm -f /etc/apt/sources.list.d/pgdg.list \
-    && rm -rf /var/lib/apt/lists/*
-
 # Install rtlcss (on Debian buster)
 RUN npm install -g rtlcss
 
-# Install Odoo
-ENV ODOO_VERSION 18.0
-ARG ODOO_RELEASE=20241118
-ARG ODOO_SHA=1b907c8c28df9e8e1ef0593b995e8c3408c65c43
-RUN curl -o odoo.deb -sSL http://nightly.odoo.com/${ODOO_VERSION}/nightly/deb/odoo_${ODOO_VERSION}.${ODOO_RELEASE}_all.deb \
-    && echo "${ODOO_SHA} odoo.deb" | sha1sum -c - \
-    && apt-get update \
-    && apt-get -y install --no-install-recommends ./odoo.deb \
-    && rm -rf /var/lib/apt/lists/* odoo.deb
+# Create Odoo user
+RUN useradd -m -d /opt/odoo -U -r -s /bin/bash odoo
 
-# Copy entrypoint script and Odoo configuration file
-COPY ./entrypoint.sh /
+# Setting up a working directory
+WORKDIR /opt/odoo
+
+# Cloning Odoo 18 from GitHub
+RUN git clone --depth=1 --branch=18.0 https://github.com/odoo/odoo.git /opt/odoo/odoo
+
+# Create a virtual environment
+RUN python3 -m venv /opt/odoo/venv && \
+    /opt/odoo/venv/bin/pip install --upgrade pip
+
+# Installing Python dependencies in the virtual environment
+RUN /opt/odoo/venv/bin/pip install --no-cache-dir -r /opt/odoo/odoo/requirements.txt
+
+# Copy Odoo configuration file
+RUN mkdir /etc/odoo
 COPY ./odoo.conf /etc/odoo/
 
-# Set permissions and Mount /var/lib/odoo to allow restoring filestore and /mnt/extra-addons for users addons
-RUN chown odoo /etc/odoo/odoo.conf \
-    && mkdir -p /mnt/extra-addons \
-    && chown -R odoo /mnt/extra-addons
-VOLUME ["/var/lib/odoo", "/mnt/extra-addons"]
+# Create your own modules library
+RUN mkdir /opt/odoo/own_addons
+
+# Create Odoo data directory
+RUN mkdir /var/lib/odoo
+
+# Set permissions
+RUN chown -R odoo:odoo /etc/odoo \
+&& chown -R odoo:odoo /opt/odoo \
+&& chown -R odoo:odoo /var/lib/odoo
 
 # Expose Odoo services
 EXPOSE 8069 8071 8072
 
-# Set the default config file
-ENV ODOO_RC /etc/odoo/odoo.conf
-
-COPY wait-for-psql.py /usr/local/bin/wait-for-psql.py
+# Setting volumes
+VOLUME ["/var/lib/odoo"]
 
 # Set default user when running the container
 USER odoo
 
-ENTRYPOINT ["/entrypoint.sh"]
-CMD ["odoo"]
+ENTRYPOINT ["/opt/odoo/venv/bin/python", "/opt/odoo/odoo/odoo-bin"]
+CMD ["--config=/etc/odoo/odoo.conf"]
