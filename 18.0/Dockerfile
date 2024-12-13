@@ -87,6 +87,7 @@ RUN python3 -m venv /opt/odoo/venv && \
 
 # Installing Python dependencies in the virtual environment
 RUN /opt/odoo/venv/bin/pip install --no-cache-dir -r /opt/odoo/odoo/requirements.txt
+RUN /opt/odoo/venv/bin/pip install --no-cache-dir python-barcode
 
 # Copy Odoo configuration file
 RUN mkdir /etc/odoo
