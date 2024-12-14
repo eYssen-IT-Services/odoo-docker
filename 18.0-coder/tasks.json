@@ -4,7 +4,11 @@
         {
             "label": "Start Odoo Shell",
             "type": "shell",
-            "command": "/opt/odoo/venv/bin/python /opt/odoo/odoo/odoo-bin shell",
+            "command": "/bin/bash",
+            "args": [
+                "-c",
+                "/opt/odoo/venv/bin/python /opt/odoo/odoo/odoo-bin shell -c /etc/odoo/odoo.conf -d $(python3 /opt/odoo/get_db_name.py)"
+            ],
             "problemMatcher": []
         }
     ]

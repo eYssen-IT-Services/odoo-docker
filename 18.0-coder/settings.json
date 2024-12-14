@@ -3,7 +3,10 @@
     "terminal.integrated.profiles.linux": {
         "Odoo Shell": {
             "path": "/bin/bash",
-            "args": ["-c", "/opt/odoo/venv/bin/python /opt/odoo/odoo/odoo-bin shell"]
+            "args": [
+                "-c",
+                "/opt/odoo/venv/bin/python /opt/odoo/odoo/odoo-bin shell -c /etc/odoo/odoo.conf -d $(python3 /opt/odoo/get_db_name.py)"
+            ]
         }
     }
 }

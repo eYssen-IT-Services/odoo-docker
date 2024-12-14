@@ -56,6 +56,7 @@ RUN apt-get update && \
         unzip \
         postgresql-client \
         xz-utils \
+        vim \
         mc && \
     if [ -z "${TARGETARCH}" ]; then \
         TARGETARCH="$(dpkg --print-architecture)"; \
@@ -96,6 +97,7 @@ RUN mkdir /etc/odoo \
 && mkdir -p /opt/odoo/.local/share/code-server/User
 
 # Odoo Shell
+COPY get_db_name.py /opt/odoo/get_db_name.py
 COPY tasks.json /opt/odoo/.local/share/code-server/User/tasks.json
 COPY settings.json /opt/odoo/.local/share/code-server/User/settings.json
 
