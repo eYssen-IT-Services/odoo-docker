@@ -57,7 +57,8 @@ RUN apt-get update && \
         postgresql-client \
         xz-utils \
         vim \
-        mc && \
+        mc \
+        lnav && \
     if [ -z "${TARGETARCH}" ]; then \
         TARGETARCH="$(dpkg --print-architecture)"; \
     fi; \
