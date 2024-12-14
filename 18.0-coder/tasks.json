@@ -1,0 +1,11 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Start Odoo Shell",
+            "type": "shell",
+            "command": "/opt/odoo/venv/bin/python /opt/odoo/odoo/odoo-bin shell",
+            "problemMatcher": []
+        }
+    ]
+}

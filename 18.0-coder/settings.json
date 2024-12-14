@@ -1,0 +1,9 @@
+{
+    "terminal.integrated.defaultProfile.linux": "Odoo Shell",
+    "terminal.integrated.profiles.linux": {
+        "Odoo Shell": {
+            "path": "/bin/bash",
+            "args": ["-c", "/opt/odoo/venv/bin/python /opt/odoo/odoo/odoo-bin shell"]
+        }
+    }
+}
