@@ -11,6 +11,7 @@ ARG TARGETARCH
 
 # Install some deps, lessc and less-plugin-clean-css, and wkhtmltopdf
 RUN apt-get update && \
+    apt-get upgrade && \
     DEBIAN_FRONTEND=noninteractive \
     apt-get install -y --no-install-recommends \
         git \
@@ -75,29 +76,18 @@ RUN npm install -g rtlcss
 # Create Odoo user
 RUN useradd -m -d /opt/odoo -U -r -s /bin/bash odoo
 
-# Setting up a working directory
-WORKDIR /opt/odoo
-
-# Cloning Odoo 18 from GitHub
-RUN git clone --depth=1 --branch=18.0 https://github.com/odoo/odoo.git /opt/odoo/odoo
-
 # Create a virtual environment
 RUN python3 -m venv /opt/odoo/venv && \
     /opt/odoo/venv/bin/pip install --upgrade pip
 
 # Installing Python dependencies in the virtual environment
-RUN /opt/odoo/venv/bin/pip install --no-cache-dir -r /opt/odoo/odoo/requirements.txt
-RUN /opt/odoo/venv/bin/pip install --no-cache-dir python-barcode
+COPY ./requirements.txt /tmp/
+RUN /opt/odoo/venv/bin/pip install --no-cache-dir -r /tmp/requirements.txt
+RUN rm /tmp/requirements.txt
 
-# Copy Odoo configuration file
-RUN mkdir /etc/odoo
-COPY ./odoo.conf /etc/odoo/
-
-# Create your own modules library
-RUN mkdir /opt/odoo/own_addons
-
-# Create Odoo data directory
-RUN mkdir /var/lib/odoo
+# Create directories
+RUN mkdir /etc/odoo \
+&& mkdir /var/lib/odoo
 
 # Set permissions
 RUN chown -R odoo:odoo /etc/odoo \
@@ -106,9 +96,6 @@ RUN chown -R odoo:odoo /etc/odoo \
 
 # Expose Odoo services
 EXPOSE 8069 8071 8072
-
-# Setting volumes
-VOLUME ["/var/lib/odoo"]
 
 # Set default user when running the container
 USER odoo
