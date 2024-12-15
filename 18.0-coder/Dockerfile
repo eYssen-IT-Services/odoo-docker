@@ -58,7 +58,8 @@ RUN apt-get update && \
         xz-utils \
         vim \
         mc \
-        lnav && \
+        lnav \
+        iputils-ping && \
     if [ -z "${TARGETARCH}" ]; then \
         TARGETARCH="$(dpkg --print-architecture)"; \
     fi; \
@@ -94,6 +95,7 @@ RUN rm /tmp/requirements.txt
 # Create directories
 RUN mkdir /etc/odoo \
 && mkdir /var/lib/odoo \
+&& mkdir /var/log/odoo \
 && mkdir -p /opt/odoo/.config/code-server/User \
 && mkdir -p /opt/odoo/.local/share/code-server/User
 
@@ -106,6 +108,7 @@ COPY settings.json /opt/odoo/.local/share/code-server/User/settings.json
 RUN chown -R odoo:odoo /etc/odoo \
 && chown -R odoo:odoo /opt/odoo \
 && chown -R odoo:odoo /var/lib/odoo \
+&& chown -R odoo:odoo /var/log/odoo \
 && chown -R odoo:odoo /opt/odoo/.config
 
 # Expose Odoo and Coder services
@@ -113,7 +116,6 @@ EXPOSE 8069 8071 8072 8080
 
 # Set default user when running the container
 USER odoo
-
 
 # Install extension for VS Code
 RUN code-server --install-extension ms-python.python
