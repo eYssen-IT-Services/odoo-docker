@@ -59,7 +59,9 @@ RUN apt-get update && \
         vim \
         mc \
         lnav \
-        iputils-ping && \
+        iputils-ping \
+        supervisor \
+        figlet && \
     if [ -z "${TARGETARCH}" ]; then \
         TARGETARCH="$(dpkg --print-architecture)"; \
     fi; \
@@ -87,6 +89,10 @@ RUN useradd -m -d /opt/odoo -U -r -s /bin/bash odoo
 RUN python3 -m venv /opt/odoo/venv && \
     /opt/odoo/venv/bin/pip install --upgrade pip
 
+# Copy commands
+COPY bin/* /usr/local/bin/
+RUN chmod +x /usr/local/bin/*
+
 # Installing Python dependencies in the virtual environment
 COPY ./requirements.txt /tmp/
 RUN /opt/odoo/venv/bin/pip install --no-cache-dir -r /tmp/requirements.txt
@@ -99,11 +105,6 @@ RUN mkdir /etc/odoo \
 && mkdir -p /opt/odoo/.config/code-server/User \
 && mkdir -p /opt/odoo/.local/share/code-server/User
 
-# Odoo Shell
-COPY get_db_name.py /opt/odoo/get_db_name.py
-COPY tasks.json /opt/odoo/.local/share/code-server/User/tasks.json
-COPY settings.json /opt/odoo/.local/share/code-server/User/settings.json
-
 # Set permissions
 RUN chown -R odoo:odoo /etc/odoo \
 && chown -R odoo:odoo /opt/odoo \
@@ -114,17 +115,35 @@ RUN chown -R odoo:odoo /etc/odoo \
 # Expose Odoo and Coder services
 EXPOSE 8069 8071 8072 8080
 
-# Set default user when running the container
-USER odoo
-
 # Install extension for VS Code
+USER odoo
 RUN code-server --install-extension ms-python.python
-COPY Odoo.odoo-0.2.4.vsix /extensions/Odoo.odoo-0.2.4.vsix
+COPY coder/Odoo.odoo-0.2.4.vsix /extensions/Odoo.odoo-0.2.4.vsix
 RUN code-server --install-extension /extensions/Odoo.odoo-0.2.4.vsix
 RUN code-server --install-extension jigar-patel.OdooSnippets
 # RUN code-server --install-extension mstuttgart.odoo-snippets
 RUN code-server --install-extension ckolkman.vscode-postgres
 
-# Start Odoo and Coder
-ENTRYPOINT ["/bin/bash", "-c"]
-CMD ["/opt/odoo/venv/bin/python /opt/odoo/odoo/odoo-bin --config=/etc/odoo/odoo.conf & code-server --host 0.0.0.0 --port 8080"]
+# Create welcome message
+RUN echo 'echo -e "\n$(figlet -w 100 -f slant eYssen ERP)"' >> /opt/odoo/.bashrc && \
+    echo 'CONTAINER_NAME=$(hostname)' >> /opt/odoo/.bashrc && \
+    echo 'OS_NAME=$(grep ^PRETTY_NAME /etc/os-release | cut -d= -f2 | tr -d "\"")' >> /opt/odoo/.bashrc && \
+    echo 'echo "You are connected to your Odoo instance: $CONTAINER_NAME running on $OS_NAME"' >> /opt/odoo/.bashrc && \
+    echo "echo \"\"" >> /opt/odoo/.bashrc && \
+    echo "echo \"Overview of useful commands:\"" >> /opt/odoo/.bashrc && \
+    echo "echo \"\"" >> /opt/odoo/.bashrc && \
+    echo "echo \"  \$ odoo-shell          Open an Odoo shell\"" >> /opt/odoo/.bashrc && \
+    echo "echo \"  \$ odoo-update         Update modules in the database\"" >> /opt/odoo/.bashrc && \
+    echo "echo \"  \$ odoo-restart        Restart Odoo services\"" >> /opt/odoo/.bashrc && \
+    echo "echo \"  \$ odoo-stop           Stop Odoo services\"" >> /opt/odoo/.bashrc && \
+    echo "echo \"  \$ odoo-start          Start Odoo services\"" >> /opt/odoo/.bashrc && \
+    echo "echo \"  \$ odoo-status         Status Odoo services\"" >> /opt/odoo/.bashrc && \
+    echo "echo \"  \$ odoo-log            Navigate in your instance's odoo.log file\"" >> /opt/odoo/.bashrc && \
+    echo "echo \"\"" >> /opt/odoo/.bashrc
+
+# Configure supervisord
+USER root
+COPY conf/supervisord.conf /etc/supervisor/supervisord.conf
+
+# Start supervisord
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]

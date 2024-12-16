@@ -1,0 +1,45 @@
+#!/usr/bin/env python3
+"""
+Update Odoo module
+
+This script proceed to a manual update of one or more Odoo modules in the database.
+
+Usage:
+  odoo-update [--help] <module>
+
+Options:
+  -h, --help           Show this screen and exit.
+  <module>             Module list to update separated by comma.
+                       Use 'all' as module name to update all modules at once.
+"""
+import os
+import sys
+import docopt
+import configparser
+
+current_user = os.getenv("USER")
+if current_user != "odoo":
+    print("This script must be run as the 'odoo' user.")
+    sys.exit(1)
+
+def get_db_name(config_file="/etc/odoo/odoo.conf"):
+    config = configparser.ConfigParser()
+    config.read(config_file)
+    return config.get("options", "dbfilter", fallback="default")
+
+argv = sys.argv[1:] or ['-h']
+args = docopt.docopt(__doc__, argv=argv)
+
+if __name__ == "__main__":
+    cmd = [
+        '/opt/odoo/venv/bin/python',
+        '/opt/odoo/odoo/odoo-bin',
+        '-c', '/etc/odoo/odoo.conf',
+        '-d',
+        get_db_name(),
+        '-u', args['<module>'],
+        '--stop-after-init',
+        '--no-http',
+        '--logfile='
+    ]
+    os.execv(cmd[0], cmd)
