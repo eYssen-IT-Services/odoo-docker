@@ -61,7 +61,8 @@ RUN apt-get update && \
         lnav \
         iputils-ping \
         supervisor \
-        figlet && \
+        figlet \
+        less && \
     if [ -z "${TARGETARCH}" ]; then \
         TARGETARCH="$(dpkg --print-architecture)"; \
     fi; \
@@ -125,7 +126,7 @@ RUN code-server --install-extension jigar-patel.OdooSnippets
 RUN code-server --install-extension ckolkman.vscode-postgres
 
 # Create welcome message
-RUN echo 'echo -e "\n$(figlet -w 100 -f slant eYssen ERP)"' >> /opt/odoo/.bashrc && \
+RUN echo 'echo -e "\n$(figlet -w 100 -f slant eYssen ERP Cloud)"' >> /opt/odoo/.bashrc && \
     echo 'CONTAINER_NAME=$(hostname)' >> /opt/odoo/.bashrc && \
     echo 'OS_NAME=$(grep ^PRETTY_NAME /etc/os-release | cut -d= -f2 | tr -d "\"")' >> /opt/odoo/.bashrc && \
     echo 'echo "You are connected to your Odoo instance: $CONTAINER_NAME running on $OS_NAME"' >> /opt/odoo/.bashrc && \
@@ -133,6 +134,7 @@ RUN echo 'echo -e "\n$(figlet -w 100 -f slant eYssen ERP)"' >> /opt/odoo/.bashrc
     echo "echo \"Overview of useful commands:\"" >> /opt/odoo/.bashrc && \
     echo "echo \"\"" >> /opt/odoo/.bashrc && \
     echo "echo \"  \$ odoo-shell          Open an Odoo shell\"" >> /opt/odoo/.bashrc && \
+    echo "echo \"  \$ odoo-db             Open an Odoo database shell\"" >> /opt/odoo/.bashrc && \
     echo "echo \"  \$ odoo-update         Update modules in the database\"" >> /opt/odoo/.bashrc && \
     echo "echo \"  \$ odoo-restart        Restart Odoo services\"" >> /opt/odoo/.bashrc && \
     echo "echo \"  \$ odoo-stop           Stop Odoo services\"" >> /opt/odoo/.bashrc && \
