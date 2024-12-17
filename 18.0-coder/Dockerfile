@@ -135,7 +135,7 @@ RUN echo 'echo -e "\n$(figlet -w 100 -f slant eYssen ERP Cloud)"' >> /opt/odoo/.
     echo "echo \"\"" >> /opt/odoo/.bashrc && \
     echo "echo \"  \$ odoo-shell          Open an Odoo shell\"" >> /opt/odoo/.bashrc && \
     echo "echo \"  \$ odoo-db             Open an Odoo database shell\"" >> /opt/odoo/.bashrc && \
-    echo "echo \"  \$ odoo-update         Update modules in the database\"" >> /opt/odoo/.bashrc && \
+    echo "echo \"  \$ odoo-update         Update Odoo modules\"" >> /opt/odoo/.bashrc && \
     echo "echo \"  \$ odoo-restart        Restart Odoo services\"" >> /opt/odoo/.bashrc && \
     echo "echo \"  \$ odoo-stop           Stop Odoo services\"" >> /opt/odoo/.bashrc && \
     echo "echo \"  \$ odoo-start          Start Odoo services\"" >> /opt/odoo/.bashrc && \
