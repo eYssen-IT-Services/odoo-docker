@@ -17,11 +17,6 @@ import sys
 import docopt
 import configparser
 
-current_user = os.getenv("USER")
-if current_user != "odoo":
-    print("This script must be run as the 'odoo' user.")
-    sys.exit(1)
-
 def get_db_name(config_file="/etc/odoo/odoo.conf"):
     config = configparser.ConfigParser()
     config.read(config_file)
