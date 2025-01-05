@@ -62,7 +62,11 @@ RUN apt-get update && \
         iputils-ping \
         supervisor \
         figlet \
-        less && \
+        less \
+        libcairo2-dev \
+        python3-cairo \
+        python3-gi \
+        pkg-config && \
     if [ -z "${TARGETARCH}" ]; then \
         TARGETARCH="$(dpkg --print-architecture)"; \
     fi; \
