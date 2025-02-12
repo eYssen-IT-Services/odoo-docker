@@ -18,7 +18,13 @@ RUN apt-get update && \
         ca-certificates \
         curl \
         dirmngr \
+        fonts-dejavu-core \
+        fonts-dejavu-extra \
+        fonts-liberation \
         fonts-noto-cjk \
+        fonts-noto-core \
+        fonts-noto-ui-core \
+        fonts-noto-mono \
         gnupg \
         libssl-dev \
         node-less \
