@@ -25,16 +25,17 @@ def get_db_name(config_file="/etc/odoo/odoo.conf"):
 argv = sys.argv[1:] or ['-h']
 args = docopt.docopt(__doc__, argv=argv)
 
-if __name__ == "__main__":
-    cmd = [
-        '/opt/odoo/venv/bin/python',
-        '/opt/odoo/odoo/odoo-bin',
-        '-c', '/etc/odoo/odoo.conf',
-        '-d',
-        get_db_name(),
-        '-u', args['<module>'],
-        '--stop-after-init',
-        '--no-http',
-        '--logfile='
-    ]
-    os.execv(cmd[0], cmd)
+cmd = [
+    '/opt/odoo/venv/bin/python',
+    '/opt/odoo/odoo/odoo-bin',
+    '-c', '/etc/odoo/odoo.conf',
+    '-d',
+    get_db_name(),
+    '-u', args['<module>'],
+    '--stop-after-init',
+    '--no-http',
+    '--logfile='
+]
+os.execv(cmd[0], cmd)
+
+os.execv('odoo-restart')
