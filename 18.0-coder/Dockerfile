@@ -129,7 +129,7 @@ EXPOSE 8069 8071 8072 8080
 # Install extension for VS Code
 USER odoo
 RUN code-server --install-extension ms-python.python
-COPY coder/Odoo.odoo-0.2.4.vsix /extensions/Odoo.odoo-0.2.4.vsix
+# COPY coder/Odoo.odoo-0.2.4.vsix /extensions/Odoo.odoo-0.2.4.vsix
 RUN code-server --install-extension /extensions/Odoo.odoo-0.2.4.vsix
 RUN code-server --install-extension jigar-patel.OdooSnippets
 # RUN code-server --install-extension mstuttgart.odoo-snippets
