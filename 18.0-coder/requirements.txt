@@ -94,3 +94,8 @@ python-barcode
 rlPyCairo
 watchdog
 httpagentparser
+html2text
+phonenumbers
+pdfminer.six
+packaging
+unidecode
