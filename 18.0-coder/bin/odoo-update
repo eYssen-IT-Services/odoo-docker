@@ -34,7 +34,8 @@ cmd = [
     '-u', args['<module>'],
     '--stop-after-init',
     '--no-http',
-    '--logfile='
+    '--logfile=',
+    '--log-level=info'
 ]
 os.execv(cmd[0], cmd)
 
