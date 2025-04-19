@@ -99,3 +99,4 @@ phonenumbers
 pdfminer.six
 packaging
 unidecode
+qifparse
