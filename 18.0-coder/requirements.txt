@@ -100,3 +100,6 @@ pdfminer.six
 packaging
 unidecode
 qifparse
+python-docx
+python_docx_replace
+pycryptodomex
