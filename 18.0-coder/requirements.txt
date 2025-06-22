@@ -10,6 +10,7 @@ docutils==0.20.1
 freezegun==1.2.1
 geoip2==2.9.0
 gevent==24.2.1
+google_auth
 greenlet==3.0.3
 html2text==2024.2.26
 httpagentparser
