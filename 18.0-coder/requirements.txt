@@ -14,7 +14,6 @@ google_auth
 greenlet==3.0.3
 html2text==2024.2.26
 httpagentparser
-icu
 idna==3.6
 Jinja2==3.1.2
 libsass==0.22.0

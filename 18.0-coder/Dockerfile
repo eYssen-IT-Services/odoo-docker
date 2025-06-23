@@ -30,6 +30,7 @@ RUN apt-get update && \
         node-less \
         nodejs \
         npm \
+        python3-icu \
         python3-magic \
         python3-num2words \
         python3-odf \
