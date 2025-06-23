@@ -7,10 +7,12 @@ chardet==5.2.0
 cryptography==44.0.0
 decorator==5.1.1
 docutils==0.20.1
+docxtpl
 freezegun==1.2.1
 geoip2==2.9.0
 gevent==24.2.1
 google_auth
+googlemaps
 greenlet==3.0.3
 html2text==2024.2.26
 httpagentparser
@@ -36,6 +38,7 @@ psycopg2==2.9.9
 pycparser
 pycryptodomex==3.21.0
 pyhanko==0.29.1
+PyICU
 pyOpenSSL==25.1.0
 PyPDF2==2.12.1
 pyserial==3.5
