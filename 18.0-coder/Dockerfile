@@ -87,6 +87,10 @@ RUN apt-get update && \
     && curl -o wkhtmltox.deb -sSL https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-3/wkhtmltox_0.12.6.1-3.jammy_${WKHTMLTOPDF_ARCH}.deb \
     && echo ${WKHTMLTOPDF_SHA} wkhtmltox.deb | sha1sum -c - \
     && apt-get install -y --no-install-recommends ./wkhtmltox.deb \
+    && apt-get install -y locales \
+    && sed -i 's/^# *\(.*UTF-8\)/\1/' /etc/locale.gen \
+    && locale-gen \
+    && update-locale LANG=en_US.UTF-8 \
     && rm -rf /var/lib/apt/lists/* wkhtmltox.deb
 
 # Install rtlcss (on Debian buster)
