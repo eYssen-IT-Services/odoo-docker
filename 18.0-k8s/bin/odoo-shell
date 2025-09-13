@@ -1,0 +1,22 @@
+#!/usr/bin/env python3
+import os
+import sys
+import configparser
+
+def get_db_name(config_file="/data/config/odoo.conf"):
+    config = configparser.ConfigParser()
+    config.read(config_file)
+    return config.get("options", "dbfilter", fallback="default")
+
+if __name__ == "__main__":
+    cmd = [
+        '/opt/odoo/venv/bin/python',
+        '/data/odoo/odoo/odoo-bin',
+        'shell',
+        '-c',
+        '/data/config/odoo.conf',
+        '--no-http',
+        '-d',
+        get_db_name()
+    ]
+    os.execv(cmd[0], cmd)

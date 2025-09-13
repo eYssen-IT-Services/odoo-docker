@@ -1,0 +1,27 @@
+#!/usr/bin/env python3
+import os
+import configparser
+
+config = configparser.ConfigParser()
+config.read("/data/config/odoo.conf")
+
+db_password = config.get("options", "db_password", fallback="default")
+db_host = config.get("options", "db_host", fallback="default")
+db_port = config.get("options", "db_port", fallback="default")
+db_user = config.get("options", "db_user", fallback="default")
+db_name = config.get("options", "dbfilter", fallback="default")
+
+psql_path = "/usr/bin/psql"
+
+env = os.environ.copy()
+env["PGPASSWORD"] = db_password
+
+cmd = [
+    psql_path,
+    "-h", db_host,
+    "-p", db_port,
+    "-U", db_user,
+    db_name,
+]
+
+os.execve(psql_path, cmd, env)

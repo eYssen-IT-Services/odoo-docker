@@ -1,0 +1,42 @@
+#!/usr/bin/env python3
+"""
+Update Odoo module
+
+This script proceed to a manual update of one or more Odoo modules in the database.
+
+Usage:
+  odoo-update [--help] <module>
+
+Options:
+  -h, --help           Show this screen and exit.
+  <module>             Module list to update separated by comma.
+                       Use 'all' as module name to update all modules at once.
+"""
+import os
+import sys
+import docopt
+import configparser
+
+def get_db_name(config_file="/etc/odoo/odoo.conf"):
+    config = configparser.ConfigParser()
+    config.read(config_file)
+    return config.get("options", "dbfilter", fallback="default")
+
+argv = sys.argv[1:] or ['-h']
+args = docopt.docopt(__doc__, argv=argv)
+
+cmd = [
+    '/opt/odoo/venv/bin/python',
+    '/opt/odoo/odoo/odoo-bin',
+    '-c', '/etc/odoo/odoo.conf',
+    '-d',
+    get_db_name(),
+    '-u', args['<module>'],
+    '--stop-after-init',
+    '--no-http',
+    '--logfile=',
+    '--log-level=info'
+]
+os.execv(cmd[0], cmd)
+
+os.execv('odoo-restart')
